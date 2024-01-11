@@ -5,11 +5,15 @@ namespace App\Services;
 use App\Models\Tweet;
 use Carbon\Carbon;
 use App\Models\Image;
+use App\Modules\ImageUpload\ImageManagerInterface;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class TweetService
 {
+    public function __construct(private ImageManagerInterface $imageManager)
+    {}
+
     public function getTweets()
     {
         return Tweet::with('images')->orderBy('created_at', 'DESC')->get();
@@ -40,6 +44,7 @@ class TweetService
             $tweet->save();
             foreach ($images as $image) {
                 Storage::putFile('public/images', $image);
+                $name = $this->imageManager->save($image);
                 $imageModel = new Image();
                 $imageModel->name = $image->hashName();
                 $imageModel->save();
@@ -56,6 +61,7 @@ class TweetService
                 if(Storage::exists($filePath)){
                     Storage::delete($filePath);
                 }
+                $this->imageManager->delete($image->name);
                 $tweet->images()->detach($image->id);
                 $image->delete();
             });
