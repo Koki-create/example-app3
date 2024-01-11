@@ -5,7 +5,7 @@
         "dev": "vite",
         "build": "vite build",
         "heroku-postbuild": "npm run production",
-        "build:production": "node --version"
+        "production": "node --version"
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",
