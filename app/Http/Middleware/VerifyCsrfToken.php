@@ -12,6 +12,6 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        'https://professional-web-programming2-c3ecbc337e66.herokuapp.com/*',
+        //
     ];
 }
