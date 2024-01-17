@@ -47,11 +47,8 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        // 登録処理の際に使われるコントローラーで、処理がどこまで通っているかを確かめるためのコードを追加
-        echo 'passed 1';
         event(new Registered($newUser));
         
-        echo 'passed 2';
         Auth::login($newUser);
         
         // メールの送信処理を追加
@@ -60,7 +57,6 @@ class RegisteredUserController extends Controller
             $mailer->to($user->email)
             ->send(new NewUserIntroduction($user, $newUser));
         }
-        echo 'passed 3';
 
         return redirect(RouteServiceProvider::HOME);
     }
