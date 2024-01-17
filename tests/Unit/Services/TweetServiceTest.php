@@ -15,7 +15,7 @@ class TweetServiceTest extends TestCase
      */
     public function test_check_own_tweet()
     {
-        $tweetService = new TweetService(); // TweetServiceのインスタンスを作成
+        $tweetService = new TweetService();
 
         $mock = Mockery::mock('alias:App\Models\Tweet');
         $mock->shouldReceive('where->first')->andReturn((object)[
