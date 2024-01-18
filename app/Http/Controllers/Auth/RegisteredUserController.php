@@ -51,21 +51,23 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        event(new Registered($newUser));
-        
-        Auth::login($newUser);
-        
         // メールの送信処理
         $allUser = User::get();
         foreach ($allUser as $user) {
             $mailer->to($user->email)
             ->send(new NewUserIntroduction($user, $newUser));
         }
+        
+        // メールの送信処理の後にeventメソッドとloginメソッドが実行されるようにコードの順番を入れ替え
+        event(new Registered($newUser));
+        
+        Auth::login($newUser);
 
         return redirect(RouteServiceProvider::HOME);
-
-        } catch (\Throwable $e) {
-            DB::rollback();
+        
+    } catch (\Throwable $e) {
+        DB::rollback();
+        return redirect(RouteServiceProvider::HOME);
         }
     }
 }
