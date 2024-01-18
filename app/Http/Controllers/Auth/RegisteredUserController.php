@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use App\Mail\NewUserIntroduction;
 use Illuminate\Contracts\Mail\Mailer;
+use Illuminate\Support\Facades\DB;
 
 class RegisteredUserController extends Controller
 {
@@ -41,7 +42,10 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $newUser = User::create([
+        // Mailgunに未登録のメールアドレスの場合、会員登録処理が行われないようにtry catch文を追記
+        try {
+        
+            $newUser = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
@@ -59,5 +63,9 @@ class RegisteredUserController extends Controller
         }
 
         return redirect(RouteServiceProvider::HOME);
+
+        } catch (\Throwable $e) {
+            DB::rollback();
+        }
     }
 }
