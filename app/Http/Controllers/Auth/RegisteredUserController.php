@@ -42,32 +42,23 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        // Mailgunに未登録のメールアドレスの場合、会員登録処理が行われないようにtry catch文を追記
-        try {
-        
-            $newUser = User::create([
+        $newUser = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
+        event(new Registered($newUser));
+        
+        Auth::login($newUser);
+        
         // メールの送信処理
         $allUser = User::get();
         foreach ($allUser as $user) {
             $mailer->to($user->email)
             ->send(new NewUserIntroduction($user, $newUser));
         }
-        
-        // メールの送信処理の後にeventメソッドとloginメソッドが実行されるようにコードの順番を入れ替え
-        event(new Registered($newUser));
-        
-        Auth::login($newUser);
 
         return redirect(RouteServiceProvider::HOME);
-        
-    } catch (\Throwable $e) {
-        DB::rollback();
-        return redirect(RouteServiceProvider::HOME);
-        }
     }
 }
