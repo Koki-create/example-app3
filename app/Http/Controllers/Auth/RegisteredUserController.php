@@ -58,6 +58,7 @@ class RegisteredUserController extends Controller
             ->send(new NewUserIntroduction($user, $newUser));
         }
 
+        // 設定済みのホーム画面へリダイレクト
         return redirect(RouteServiceProvider::HOME);
     }
 }
