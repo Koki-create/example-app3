@@ -52,7 +52,6 @@ class RegisteredUserController extends Controller
         
         Auth::login($newUser);
         
-        // メールの送信処理
         $allUser = User::get();
         foreach ($allUser as $user) {
             $mailer->to($user->email)
